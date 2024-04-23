@@ -1,0 +1,14 @@
+services:
+  backend:
+    container_name: backend
+    build: ./services/backend
+    command: 'uvicorn app.main:app --host 0.0.0.0'
+    volumes:
+      - ./services/backend:/app
+    ports:
+      - 8000:8000
+    networks:
+      - secret
+
+networks:
+  secret:

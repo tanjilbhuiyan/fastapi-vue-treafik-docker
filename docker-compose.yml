@@ -5,10 +5,43 @@ services:
     command: 'uvicorn app.main:app --host 0.0.0.0'
     volumes:
       - ./services/backend:/app
-    ports:
-      - 8000:8000
+    environment:
+      - DATABASE_URL=postgresql://fastapi_traefik:fastapi_traefik@db:5432/fastapi_traefik
+    depends_on:
+      - db
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.fastapi.rule=Host(`fastapi.localhost`)"
     networks:
       - secret
+  db:
+    container_name: Database
+    image: postgres:16.2-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    expose:
+      - 5432
+    environment:
+      - POSTGRES_USER=fastapi_traefik
+      - POSTGRES_PASSWORD=fastapi_traefik
+      - POSTGRES_DB=fastapi_traefik
+    networks:
+      - secret
+  traefik:
+    container_name: Traefik
+    image: traefik:v2.11.2
+    command: --api.insecure=true --providers.docker
+    ports:
+      - 8008:80
+      - 8080:8080
+    volumes:
+      - "./traefik.toml:/etc/traefik/traefik.toml"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    networks:
+      - secret
+
+volumes:
+  postgres_data:
 
 networks:
   secret:

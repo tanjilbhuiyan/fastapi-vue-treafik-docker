@@ -10,15 +10,22 @@
 
 # Traefik dashboard over http
 [api]
-dashboard = true
-insecure = true
+  dashboard = true
+  insecure = true
 
 [log]
-level = "ERROR"
+  level = "ERROR"
+  filePath = "log/traefik.log"
+  format = "json"
 
 [accessLog]
+  filePath = "accesslog/access.log"
+  format = "json"
 
 # containers are not discovered automatically
 [providers]
   [providers.docker]
     exposedByDefault = false
+
+[ping]
+  entryPoint = "traefik"

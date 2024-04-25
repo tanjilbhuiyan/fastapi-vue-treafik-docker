@@ -2,14 +2,14 @@ services:
   frontend:
     container_name: frontend
     build: ./services/frontend
+    command: 'pnpm run dev'
     volumes:
       - ./services/frontend:/app
-      - '/app/node_modules'
+    expose:
+      - 5173
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.vue.rule=Host(`vue.localhost`)"
-    ports:
-      - 5173:5173
     networks:
       - secret
   backend:
@@ -20,6 +20,8 @@ services:
       - ./services/backend:/app
     environment:
       - DATABASE_URL=postgresql://fastapi_traefik:fastapi_traefik@db:5432/fastapi_traefik
+    expose:
+      - 8000
     depends_on:
       - db
     labels:

@@ -9,7 +9,7 @@ COPY package.json .
 RUN pnpm install
 
 COPY . .
-
+RUN pnpm run build
 EXPOSE 5173
 
-CMD [ "pnpm", "run", "dev" ]
+CMD [ "pnpm", "run", "preview" ]

@@ -1,4 +1,7 @@
 # traefik.toml
+[global]
+  checkNewVersion = true
+  sendAnonymousUsage = true
 
 # listen on port 80
 [entryPoints]
@@ -7,10 +10,11 @@
 
 # Traefik dashboard over http
 [api]
+dashboard = true
 insecure = true
 
 [log]
-level = "DEBUG"
+level = "ERROR"
 
 [accessLog]
 

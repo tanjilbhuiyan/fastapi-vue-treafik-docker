@@ -1,4 +1,17 @@
 services:
+  frontend:
+    container_name: frontend
+    build: ./services/frontend
+    volumes:
+      - ./services/frontend:/app
+      - '/app/node_modules'
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.vue.rule=Host(`vue.localhost`)"
+    ports:
+      - 5173:5173
+    networks:
+      - secret
   backend:
     container_name: backend
     build: ./services/backend
@@ -32,7 +45,7 @@ services:
     image: traefik:v2.11.2
     command: --api.insecure=true --providers.docker
     ports:
-      - 8008:80
+      - 80:80
       - 8080:8080
     volumes:
       - "./traefik.toml:/etc/traefik/traefik.toml"

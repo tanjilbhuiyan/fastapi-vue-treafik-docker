@@ -2,7 +2,6 @@ services:
   frontend:
     container_name: frontend
     build: ./services/frontend
-    command: 'pnpm run dev'
     volumes:
       - ./services/frontend:/app
     expose:

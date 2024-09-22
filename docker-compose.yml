@@ -1,14 +1,14 @@
 services:
   frontend:
-    container_name: frontend
-    build: ./services/frontend
-    volumes:
-      - ./services/frontend:/app
-    expose:
-      - 5173
+    build:
+      context: ./services/frontend
+      dockerfile: Dockerfile
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.vue.rule=Host(`vue.localhost`)"
+      - "traefik.http.routers.frontend.rule=PathPrefix(`/`)"
+      - "traefik.http.services.frontend.loadbalancer.server.port=80"
+    depends_on:
+      - backend
     networks:
       - secret
   backend:
@@ -19,13 +19,12 @@ services:
       - ./services/backend:/app
     environment:
       - DATABASE_URL=postgresql://fastapi_traefik:fastapi_traefik@db:5432/fastapi_traefik
-    expose:
-      - 8000
     depends_on:
       - db
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.fastapi.rule=Host(`fastapi.localhost`)"
+      - "traefik.http.routers.backend.rule=PathPrefix(`/api`)"
+      - "traefik.http.services.backend.loadbalancer.server.port=8000"
     networks:
       - secret
   db:
@@ -43,8 +42,12 @@ services:
       - secret
   traefik:
     container_name: Traefik
-    image: traefik:v2.11.2
-    command: --api.insecure=true --providers.docker
+    image: traefik:latest
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
     ports:
       - 80:80
       - 8080:8080
